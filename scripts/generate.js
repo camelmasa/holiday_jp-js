@@ -24,3 +24,13 @@ const writeFile = (file_name, holidays) => {
 
 const holidays = yaml.safeLoad(fs.readFileSync(__dirname + '/../holiday_jp/holidays_detailed.yml', 'utf8'));
 writeFile(`${__dirname}/../lib/holidays.js`, holidays)
+
+const holidays_per_years = Object.keys(holidays).reduce((holidays_per_years, date) => {
+  const year = moment(new Date(date)).format('YYYY')
+  const holidays_per_year = { ...holidays_per_years[year], [date]: holidays[date] }
+  return { ...holidays_per_years, [year]: holidays_per_year }
+}, {})
+
+for (const year of Object.keys(holidays_per_years)) {
+  writeFile(`${__dirname}/../lib/holidays/${year}.js`, holidays_per_years[year])
+}
